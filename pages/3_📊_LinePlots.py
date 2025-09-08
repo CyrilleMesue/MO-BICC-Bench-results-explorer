@@ -78,7 +78,7 @@ symbol_map = {v: available_symbols[i % len(available_symbols)] for i, v in enume
 fig = go.Figure()
 
 # --- Real data traces (no legend) ---
-feature_type_map = {'CTD':'CTD:Gene', 'CTD-pathways':'CTD:Pathway', 'GeneCards':'GeneCards:Gene', 'HMDD':'HMDD:miRNA'}
+feature_type_map = {'CTD':'CTD:Gene', 'CTD-pathways':'CTD:Pathway', 'GeneCards':'GeneCards:Gene', 'HMDD':'HMDD:miRNA', 'EWAS-ATLAS':'EWAS-ATLAS:DNA-Methylation'}
 for m in selected_featureSelectors:
     for v in validation_sources:
         sub = subset_val_data[(subset_val_data['featureSelector'] == m) & (subset_val_data['validationsource'] == v)] 
