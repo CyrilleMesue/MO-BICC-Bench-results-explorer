@@ -10,18 +10,18 @@ st.title(':sparkles: Dynamic Exploration Of MyRIAD Results!')
 
 import streamlit as st
 
-# Set a fixed sidebar width
-st.markdown(
-    """
-    <style>
-        [data-testid="stSidebar"] {
-            min-width: 230px;
-            max-width: 250px;
-        }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+# # Set a fixed sidebar width
+# st.markdown(
+#     """
+#     <style>
+#         [data-testid="stSidebar"] {
+#             min-width: 230px;
+#             max-width: 250px;
+#         }
+#     </style>
+#     """,
+#     unsafe_allow_html=True
+# )
 
 
 # --- Helpers (cache I/O) ---
