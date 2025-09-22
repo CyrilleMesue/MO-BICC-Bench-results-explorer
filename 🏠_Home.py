@@ -27,15 +27,21 @@ import streamlit as st
 # --- Helpers (cache I/O) ---
 @st.cache_data
 def load_csv(path: str) -> pd.DataFrame:
-    return pd.read_csv(path)
+    try:
+        return pd.read_csv(path)
+    except FileNotFoundError:
+        if path.endswith("val_results.csv"):
+            return pd.DataFrame()
+        else:
+            raise
 
 @st.cache_data
 def load_json(path: str) -> dict:
     with open(path, encoding="utf-8") as f:
         return json.load(f)
 
-def dataset_paths(name: str) -> dict:
-    base = Path("data") / name
+def dataset_paths(dataset_name: str, experiment_name: str) -> dict:
+    base = Path("data") / dataset_name / experiment_name
     return {
         "cv": base / "cross-validation-results.csv",
         "val": base / "val_results.csv",
@@ -44,9 +50,31 @@ def dataset_paths(name: str) -> dict:
     }
 
 # --- UI: dataset picker ---
-dataset_name = st.radio('Select Dataset', options=['ROSMAP', 'BRCA', 'MayoRNASeq'], index=0)
+col1,col2, col3 = st.columns([3,4,5])
+experimental_designs = {"ROSMAP":{"Single Omics":['miRNA_data','dna_methylation_data','gene_expression_data'],
+                                  "Dual Omics":['miRNA_and_gene_expression_data','miRNA_and_dna_methylation_data','gene_expression_and_dna_methylation_data'],
+                                  "Triple Omics":['miRNA_and_gene_expression_and_dna_methylation_data']
+                                 },
+                        'MayoRNASeq':{"Single Omics":['metabolomics_data','gene_expression_data','proteomics_data'],
+                                      "Dual Omics":['gene_expression_and_proteomics_data','metabolomics_and_gene_expression_data','metabolomics_and_proteomics_data'],
+                                      "Triple Omics": ['metabolomics_and_gene_expression_and_proteomics_data']
+                                     },
+                        'BRCA':{"Single Omics":['miRNA_data','dna_methylation_data','gene_expression_data'],
+                                  "Dual Omics":['miRNA_and_gene_expression_data','miRNA_and_dna_methylation_data','gene_expression_and_dna_methylation_data'],
+                                  "Triple Omics":['miRNA_and_gene_expression_and_dna_methylation_data']
+                               }
+                       } 
+
+dataset_name = col1.radio('Select Dataset', options=['ROSMAP', 'BRCA', 'MayoRNASeq'], index=0, key = 1)
+omics_type_list = list(experimental_designs[dataset_name].keys())
+
+omics_integration_type = col2.radio('Select Omics Type', options=omics_type_list, index=0, key = 2)
+experiment_name_list = experimental_designs[dataset_name][omics_integration_type]
+
+experiment_name = col3.radio('Select Experiment', options=experiment_name_list, index=0, key = 3)
+
 st.session_state["dataset_name"] = dataset_name
-paths = dataset_paths(dataset_name)
+paths = dataset_paths(dataset_name, experiment_name)
 
 # --- Load data ---
 df = load_csv(str(paths["cv"]))
